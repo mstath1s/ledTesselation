@@ -1,0 +1,39 @@
+<Canvas>
+    <Kind>40</Kind>
+    <Name>OFX_UI_WIDGET_CANVAS</Name>
+    <IsMinified>0</IsMinified>
+    <XPosition>0.000000000</XPosition>
+    <YPosition>0.000000000</YPosition>
+</Canvas>
+<Widget>
+    <Kind>6</Kind>
+    <Name>tRange</Name>
+    <HighValue>5604.926269531</HighValue>
+    <LowValue>5083.746093750</LowValue>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>tSpeed</Name>
+    <Value>0.541871905</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>tSpread</Name>
+    <Value>0.394088656</Value>
+</Widget>
+<Widget>
+    <Kind>6</Kind>
+    <Name>bRange</Name>
+    <HighValue>0.881773412</HighValue>
+    <LowValue>0.197044313</LowValue>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>bSpeed</Name>
+    <Value>0.266009837</Value>
+</Widget>
+<Widget>
+    <Kind>4</Kind>
+    <Name>bSpread</Name>
+    <Value>0.250000000</Value>
+</Widget>
