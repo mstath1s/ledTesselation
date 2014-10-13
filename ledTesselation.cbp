@@ -1144,9 +1144,6 @@
 		<Unit filename="config.make">
 			<Option virtualFolder="addons/ofxArtnet/build config/" />
 		</Unit>
-		<Unit filename="src/CameraController.h">
-			<Option virtualFolder="src/" />
-		</Unit>
 		<Unit filename="src/LedFixture.cpp">
 			<Option virtualFolder="src/" />
 		</Unit>
@@ -1166,12 +1163,6 @@
 			<Option virtualFolder="src/" />
 		</Unit>
 		<Unit filename="src/main.cpp">
-			<Option virtualFolder="src/" />
-		</Unit>
-		<Unit filename="src/pgCamera.cpp">
-			<Option virtualFolder="src/" />
-		</Unit>
-		<Unit filename="src/pgCamera.h">
 			<Option virtualFolder="src/" />
 		</Unit>
 		<Unit filename="src/tesselationScene.cpp">
