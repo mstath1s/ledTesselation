@@ -233,6 +233,7 @@ void testApp::setGUI()
     gui->addSpacer();
     gui->addLabelButton("Load", bLoadSettings, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
     gui->addLabelButton("Save", bSaveSettings, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addLabelButton("Save PDFs", bSavePDF, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addFPS();
 
@@ -284,9 +285,10 @@ void testApp::guiEvent(ofxUIEventArgs &e)
 
         }
     }
-
-
-
+        else if(name == "Save PDFs")
+    {
+        bSavePDF = true;
+    }
 }
 
 
@@ -392,6 +394,38 @@ void testApp::update()
 //--------------------------------------------------------------
 void testApp::draw()
 {
+    if( bSavePDF ){
+		ofBeginSaveScreenAsPDF("screenshot-"+ofGetTimestampString()+".pdf", false);
+        ofBackground(255);
+        ofSetColor(255);
+        ofPushMatrix();
+		ofTranslate(ofGetWidth()/2.0, ofGetHeight()/2.0);
+		ofTranslate(0, -ofGetHeight()/4.0);
+
+		float scaleFactor = tesselationRect.getWidth() / perlinNoiseImage.getWidth();
+        ofScale(scaleFactor, scaleFactor);
+        ofTranslate(-perlinNoiseImage.getWidth()/2.0, -perlinNoiseImage.getHeight()/2.0);
+
+        ofTranslate(-4.6,0); // manual corrections
+        ofScale(1.024,1.024);
+
+        perlinNoiseImage.draw(0,0);
+
+        ofPopMatrix();
+
+//        perlinNoiseImage.draw(0,0);
+
+		ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+
+        for(std::vector<TesselationSquare*>::iterator it = tesselation.begin(); it != tesselation.end(); ++it)
+        {
+            TesselationSquare* t = *(it);
+            t->drawForPdf();
+        }
+		ofEndSaveScreenAsPDF();
+		bSavePDF = false;
+	}
+
     ofBackgroundGradient(ofColor(40), ofColor(10), OF_GRADIENT_CIRCULAR);
     glEnable(GL_DEPTH_TEST);
     ofEnableSmoothing();
@@ -414,8 +448,6 @@ void testApp::draw()
     ofPopMatrix();
     cam.end();
     ofViewport();
-
-//    cameraController.draw();
 }
 
 //--------------------------------------------------------------
