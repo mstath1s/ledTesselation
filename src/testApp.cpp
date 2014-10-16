@@ -18,6 +18,12 @@ std::string exec(char* cmd)
 //--------------------------------------------------------------
 void testApp::setup()
 {
+
+    printFontHeader.loadFont("GUI/DroidSans.ttf", 12, true, true, true, 0);
+    printFontText.loadFont("GUI/DroidSans.ttf", 8, true, true, true, 0);
+
+    loadedFileName = "unsaved preset";
+
     hideGUI = false;
     kelvinCold = 6500;
     kelvinWarm = 4200;
@@ -240,7 +246,6 @@ void testApp::setGUI()
     gui->getRect()->setHeight(ofGetHeight());
     gui->autoSizeToFitWidgets();
 
-
     ofAddListener(gui->newGUIEvent,this,&testApp::guiEvent);
 }
 
@@ -281,13 +286,37 @@ void testApp::guiEvent(ofxUIEventArgs &e)
                 {
                     gui->loadSettings(file.getAbsolutePath());
                 }
+                loadedFileName = file.getBaseName();
             }
 
         }
     }
-        else if(name == "Save PDFs")
+    else if(name == "Save PDFs")
     {
-        bSavePDF = true;
+        ofxUIButton *button = (ofxUIButton *) e.getButton();
+        if(button->getValue())
+        {
+
+
+            string path = ofToDataPath("settings");
+            ofDirectory dir(path);
+            //only show png files
+            dir.allowExt("xml");
+            //populate the directory object
+            dir.listDir();
+
+            //go through and print out all the paths
+            for(int i = 0; i < dir.numFiles(); i++)
+            {
+                ofLogNotice(dir.getPath(i));
+                ofFile file(dir.getPath(i));
+                gui->loadSettings(file.getAbsolutePath());
+                loadedFileName = file.getBaseName();
+                bSavePDF = true;
+                update();
+                draw();
+            }
+        }
     }
 }
 
@@ -394,37 +423,153 @@ void testApp::update()
 //--------------------------------------------------------------
 void testApp::draw()
 {
-    if( bSavePDF ){
-		ofBeginSaveScreenAsPDF("screenshot-"+ofGetTimestampString()+".pdf", false);
+    if( bSavePDF )
+    {
+        ofBeginSaveScreenAsPDF(loadedFileName+" - "+ofGetTimestampString()+".pdf", false);
         ofBackground(255);
         ofSetColor(255);
+        ofPushMatrix();{
+
+        ofTranslate(-ofGetWidth()/12.5,-ofGetWidth()/60);
+
+        // perlin noise
+
         ofPushMatrix();
-		ofTranslate(ofGetWidth()/2.0, ofGetHeight()/2.0);
-		ofTranslate(0, -ofGetHeight()/4.0);
+        {
+            ofTranslate(ofGetWidth()/2.0, ofGetHeight()/2.0);
+            ofTranslate(0, -ofGetHeight()/4.0);
 
-		float scaleFactor = tesselationRect.getWidth() / perlinNoiseImage.getWidth();
-        ofScale(scaleFactor, scaleFactor);
-        ofTranslate(-perlinNoiseImage.getWidth()/2.0, -perlinNoiseImage.getHeight()/2.0);
+            float scaleFactor = tesselationRect.getWidth() / perlinNoiseImage.getWidth();
+            ofScale(scaleFactor, scaleFactor);
+            ofTranslate(-perlinNoiseImage.getWidth()/2.0, -perlinNoiseImage.getHeight()/2.0);
 
-        ofTranslate(-4.6,0); // manual corrections
-        ofScale(1.024,1.024);
+            ofTranslate(-4.6,0); // manual corrections
+            float manualScaleFactor = 1.024;
+            ofScale(manualScaleFactor,manualScaleFactor);
 
-        perlinNoiseImage.draw(0,0);
+            perlinNoiseImage.draw(0,0);
 
+            // data
+
+            ofTranslate(0, perlinNoiseImage.getHeight() * 3.0);
+
+            ofScale(1.0/manualScaleFactor,1.0/manualScaleFactor); // negate the manual scale
+            ofScale(1.0/scaleFactor, 1.0/scaleFactor); // negate the automatic scale
+
+            ofSetColor(0,255);
+
+            printFontHeader.drawStringAsShapes(loadedFileName,0,0);
+
+            float textBoxWidth = (perlinNoiseImage.getWidth()*scaleFactor*manualScaleFactor);
+            float columnWidth = textBoxWidth/3.0;
+            float graphWidth = columnWidth * 0.7;
+            float valueTextWidth = columnWidth * 0.3;
+            float columnOffsetWidth = columnWidth + (valueTextWidth/2.0);
+
+            ofTranslate(columnOffsetWidth, 0);
+
+            ofSetColor(64,255);
+
+            ofPushMatrix();
+            {
+
+                printFontHeader.drawStringAsShapes("Temperature",0,0);
+
+                ofTranslate(0, 24);
+
+                /* void testApp::drawSliderForPdf(string name,
+                                                  float x, float y, float width, float height,
+                                                  float valueMin, float valueMax,
+                                                  float value,
+                                                  float valueLow, float valueHigh){
+                */
+
+                drawSliderForPdf("range",
+                                 0, 0, graphWidth, 12,
+                                 kelvinWarm, kelvinCold,
+                                 0,
+                                 kelvinWarmRange, kelvinColdRange);
+
+                ofTranslate(0, 24);
+
+                drawSliderForPdf("speed",
+                                 0, 0, graphWidth, 12,
+                                 0, 1,
+                                 temperatureSpeed);
+
+                ofTranslate(0, 24);
+
+                drawSliderForPdf("spread",
+                                 0, 0, graphWidth, 12,
+                                 0, 1,
+                                 temperatureSpread);
+
+            }
+            ofPopMatrix();
+
+            ofTranslate(columnOffsetWidth, 0);
+
+            ofPushMatrix();
+            {
+
+                printFontHeader.drawStringAsShapes("Brightness",0,0);
+
+                ofTranslate(0, 24);
+
+                /* void testApp::drawSliderForPdf(string name,
+                                                  float x, float y, float width, float height,
+                                                  float valueMin, float valueMax,
+                                                  float value,
+                                                  float valueLow, float valueHigh){
+                */
+
+                drawSliderForPdf("range",
+                                 0, 0, graphWidth, 12,
+                                 0, 1,
+                                 0,
+                                 brightnessRangeFrom, brightnessRangeTo);
+
+                ofTranslate(0, 24);
+
+                drawSliderForPdf("speed",
+                                 0, 0, graphWidth, 12,
+                                 0, 1,
+                                 brightnessSpeed);
+
+                ofTranslate(0, 24);
+
+                drawSliderForPdf("spread",
+                                 0, 0, graphWidth, 12,
+                                 0, 1,
+                                 brightnessSpread);
+
+            }
+            ofPopMatrix();
+
+
+        }
         ofPopMatrix();
 
-//        perlinNoiseImage.draw(0,0);
+        // tesselation
 
-		ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-
-        for(std::vector<TesselationSquare*>::iterator it = tesselation.begin(); it != tesselation.end(); ++it)
+        ofPushMatrix();
         {
-            TesselationSquare* t = *(it);
-            t->drawForPdf();
+            ofTranslate(ofGetWidth()/2, ofGetHeight()/2.15);
+
+            for(std::vector<TesselationSquare*>::iterator it = tesselation.begin(); it != tesselation.end(); ++it)
+            {
+                TesselationSquare* t = *(it);
+                t->drawForPdf();
+            }
+
         }
-		ofEndSaveScreenAsPDF();
-		bSavePDF = false;
-	}
+        ofPopMatrix();
+
+            }ofPopMatrix();
+
+        ofEndSaveScreenAsPDF();
+        bSavePDF = false;
+    }
 
     ofBackgroundGradient(ofColor(40), ofColor(10), OF_GRADIENT_CIRCULAR);
     glEnable(GL_DEPTH_TEST);
@@ -504,5 +649,54 @@ void testApp::gotMessage(ofMessage msg)
 //--------------------------------------------------------------
 void testApp::dragEvent(ofDragInfo dragInfo)
 {
+
+}
+
+void testApp::drawSliderForPdf(string name, float x, float y, float width, float height,
+                               float valueMin, float valueMax, float value, float valueLow, float valueHigh)
+{
+    ofFill();
+
+    ofPushStyle();
+    ofSetColor((ofGetStyle().color * 0.5)+127);
+    ofRect(x,y,width,height);
+    ofPopStyle();
+
+    string valueString = "";
+
+    if(valueHigh == -1 && valueLow == -1)
+    {
+        ofRect(x, y, ofMap(value, valueMin, valueMax, 0, width), height);
+        valueString = ofToString(value);
+    }
+    else
+    {
+        ofRect(x + ofMap(valueLow, valueMin, valueMax, 0, width), y, ofMap(valueHigh, valueMin, valueMax, 0, width-ofMap(valueLow, valueMin, valueMax, 0, width)), height);
+        int rounding = ((valueMax - valueMin) / 1000.0 > 1.0 )? 0 : 3;
+        valueString = ofToString(valueLow, rounding) + " ... " + ofToString(valueHigh, rounding);
+    }
+
+    ofPushMatrix();
+
+    ofTranslate(-(printFontText.stringWidth(name)+height), height);
+    printFontText.drawStringAsShapes(name, 0, 0);
+
+    ofPopMatrix();
+
+    ofPushMatrix();
+
+    ofTranslate(width+height, height);
+    printFontText.drawStringAsShapes(valueString, 0, 0);
+
+    ofPopMatrix();
+
+    /*  outline
+
+        ofNoFill();
+        ofPushStyle();
+        ofSetColor((ofGetStyle().color * 0.5)+127);
+        ofRect(x,y,width,height);
+        ofPopStyle();
+    */
 
 }

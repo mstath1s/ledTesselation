@@ -202,7 +202,7 @@ public:
         }
         else
         {
-            drawColor *= temperatureToColor(round(ofMap(0.25, 0,1, kelvinCold, kelvinWarm)));
+            drawColor *= temperatureToColor(round(ofMap(0.15, 0,1, kelvinCold, kelvinWarm)));
             drawColor *= 0.75;
         }
     };
@@ -218,7 +218,16 @@ public:
     void drawForPdf()
     {
         ofFill();
-        ofSetColor(drawColor);
+
+        if(DMXstartAddress > 0)
+        {
+            ofSetColor(drawColor);
+        }
+        else
+        {
+            ofColor emptyColor = (drawColor * 0.75) + 80;
+            ofSetColor(emptyColor);
+        }
 
         ofMatrix4x4 localMatrix = ofNode::getLocalTransformMatrix();
         ofPrimitiveMode mode = getMesh().getMode();
@@ -235,7 +244,6 @@ public:
                 ofVertex(vTransformed);
             }
         ofEndShape();
-
     }
 
     void setColor(ofColor color)
@@ -295,6 +303,7 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
+    void drawSliderForPdf(string name, float x, float y, float width, float height, float valueMin, float valueMax, float value, float valueLow = -1, float valueHigh = -1);
 
     void setGUI();
 
@@ -335,4 +344,10 @@ protected:
     bool bLoadSettings;
     bool bSavePDF;
     void guiEvent(ofxUIEventArgs &e);
+
+    ofTrueTypeFont printFontHeader;
+    ofTrueTypeFont printFontText;
+
+    string loadedFileName;
+
 };
