@@ -22,22 +22,35 @@ void testApp::setup()
     printFontHeader.loadFont("GUI/DroidSans.ttf", 12, true, true, true, 0);
     printFontText.loadFont("GUI/DroidSans.ttf", 8, true, true, true, 0);
 
+    logoITU.loadImage("GUI/logoITU.jpg");
+    logoITU.resize(220, 220*logoITU.height/logoITU.width);
+    logoKADK.loadImage("GUI/logoKADK.png");
+    logoKADK.resize(100, 100*logoKADK.height/logoKADK.width);
+
     loadedFileName = "unsaved preset";
 
     hideGUI = false;
     kelvinCold = 6500;
     kelvinWarm = 4200;
 
-    kelvinColdRange = kelvinCold;
-    kelvinWarmRange = kelvinWarm;
-    temperatureSpeed = 0.5;
-    temperatureSpread = 0.15;
+    kelvinColdRangeDefault = kelvinCold * 1.0;
+    kelvinColdRange = kelvinColdRangeDefault;
+    kelvinWarmRangeDefault = kelvinWarm * 1.0;
+    kelvinWarmRange = kelvinWarmRangeDefault;
+    temperatureSpeedDefault = 0.5;
+    temperatureSpeed = temperatureSpeedDefault;
+    temperatureSpreadDefault = 0.1;
+    temperatureSpread = temperatureSpreadDefault;
     temperatureTime = 0;
 
-    brightnessRangeFrom = 0.0;
-    brightnessRangeTo = 1.0;
-    brightnessSpeed = 0.4;
-    brightnessSpread = 0.25;
+    brightnessRangeFromDefault = 0.0;
+    brightnessRangeFrom = brightnessRangeFromDefault;
+    brightnessRangeToDefault = 1.0;
+    brightnessRangeTo = brightnessRangeToDefault;
+    brightnessSpeedDefault = 0.4;
+    brightnessSpeed = brightnessSpeedDefault;
+    brightnessSpreadDefault = 0.15;
+    brightnessSpread = brightnessSpreadDefault;
     brightnessTime = 0;
 
     setGUI();
@@ -201,48 +214,60 @@ ofVec3f testApp::addTesselation(ofVec3f _origin, int _size, int _width, int _hei
 void testApp::setGUI()
 {
 
-    gui = new ofxUISuperCanvas("LEDlys Tesselation 0.9b");
+    gui = new ofxUISuperCanvas("");
 //    gui->addLabel("Press 'h' to Hide GUIs", OFX_UI_FONT_SMALL);
     gui->setWidth(ofGetWidth()/3.);
+    gui->setPadding(8);
+    gui->setGlobalSliderHeight(45);
+    gui->setPosition(10,0);
     gui->setFont("GUI/DroidSans.ttf");
     gui->setFontSize(OFX_UI_FONT_LARGE, 10);
     gui->setFontSize(OFX_UI_FONT_MEDIUM, 8);
     gui->setFontSize(OFX_UI_FONT_SMALL, 6);
-    gui->addLabel("");
-    gui->addLabel("Temperature", OFX_UI_FONT_LARGE);
+    //gui->addLabel("");
+    gui->addLabel("TEMPERATURE", OFX_UI_FONT_LARGE);
     gui->addSpacer();
     gui->addLabel("Range", OFX_UI_FONT_SMALL);
-    gui->addRangeSlider("tRange", kelvinWarm, kelvinCold, &kelvinWarmRange, &kelvinColdRange, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addRangeSlider("tRange", kelvinWarm, kelvinCold, &kelvinWarmRange, &kelvinColdRange)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addLabel("Speed", OFX_UI_FONT_SMALL);
-    gui->addSlider("tSpeed",0,1,&temperatureSpeed, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addSlider("tSpeed",0.3,0.6,&temperatureSpeed)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addLabel("Spread", OFX_UI_FONT_SMALL);
-    gui->addSlider("tSpread",0,0.33,&temperatureSpread, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addSlider("tSpread",0,0.33,&temperatureSpread)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addLabel("");
-    gui->addLabel("Brightness", OFX_UI_FONT_LARGE);
+    gui->addLabel("BRIGHTNESS", OFX_UI_FONT_LARGE);
     gui->addSpacer();
     gui->addLabel("Range", OFX_UI_FONT_SMALL);
-    gui->addRangeSlider("bRange", 0, 1, &brightnessRangeFrom, &brightnessRangeTo, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addRangeSlider("bRange", 0, 1, &brightnessRangeFrom, &brightnessRangeTo)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addLabel("Speed", OFX_UI_FONT_SMALL);
-    gui->addSlider("bSpeed",0,1,&brightnessSpeed, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addSlider("bSpeed",0.3,0.6,&brightnessSpeed)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addLabel("Spread", OFX_UI_FONT_SMALL);
-    gui->addSlider("bSpread",0,0.33,&brightnessSpread, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addSlider("bSpread",0,0.33,&brightnessSpread)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addLabel("");
+    gui->addLabel("Observational Instrument",OFX_UI_FONT_MEDIUM);
+    gui->addLabel("- an installation from: LED Lighting; Interdisciplinary LED Lighting Research.\n\nThe research project has been a three-year collaboration between\nThe Royal Danish Academy of Fine Arts; Schools of Architecture,\nDesign and Conservation and The IT University of Copenhagen.\n\nAssociate Professor: Karin Soendergaard\nResearcher: Karina Munkholm Madsen\nAssociate Professor: Kjell Yngve Petersen\nResearcher: Ole Kristensen\nLighting designer: Imke Wies van Mil\nLighting designer: Jesper Kongshaug\nLighting designer: Christina Augustesen\nResearch Assistant: Thyge Waehrens", OFX_UI_FONT_SMALL);
+    gui->addLabel("");
+    gui->addLabel("");
+    gui->addLabel("");
+    ofxUIImage * i = gui->addImage("KADK_LOGO", &logoKADK, logoKADK.width, logoKADK.height, false);
+    gui->addLabel("");
+/*    gui->addLabel("");
     gui->addLabel("Presets", OFX_UI_FONT_LARGE);
     gui->addSpacer();
     gui->addLabel("Keep settings as xml files", OFX_UI_FONT_SMALL);
     gui->addSpacer();
-    gui->addLabelButton("Load", bLoadSettings, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
-    gui->addLabelButton("Save", bSaveSettings, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
-    gui->addLabelButton("Save PDFs", bSavePDF, gui->getRect()->getWidth()-8, 30)->setColorBack(ofColor(48,48,48));
+    gui->addLabelButton("Load", bLoadSettings, gui->getRect()->getWidth()-8, 45)->setColorBack(ofColor(48,48,48));
+    gui->addLabelButton("Save", bSaveSettings, gui->getRect()->getWidth()-8, 45)->setColorBack(ofColor(48,48,48));
+    gui->addLabelButton("Save PDFs", bSavePDF, gui->getRect()->getWidth()-8, 45)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addFPS();
-
+*/
+    gui->addImage("ITU_LOGO", &logoITU, logoITU.width, logoITU.height, false);
     gui->getRect()->setHeight(ofGetHeight());
     gui->autoSizeToFitWidgets();
 
@@ -253,6 +278,9 @@ void testApp::guiEvent(ofxUIEventArgs &e)
 {
     string name = e.getName();
     int kind = e.getKind();
+
+    lastManipulationSeconds = ofGetElapsedTimef();
+
     //cout << "got event from: " << name << endl;
     if(name == "Save")
     {
@@ -328,6 +356,21 @@ void testApp::update()
     if(ofGetFrameNum() > 1)
     {
         cam.disableMouseInput();
+    }
+
+
+    if(lastManipulationSeconds + 30.0 < ofGetElapsedTimef()){
+
+    kelvinColdRange = (kelvinColdRange*0.99) + (kelvinColdRangeDefault*0.01);
+    kelvinWarmRange = (kelvinWarmRange*0.99) + (kelvinWarmRangeDefault*0.01);
+    temperatureSpeed = (temperatureSpeed*0.99) + (temperatureSpeedDefault*0.01);
+    temperatureSpread = (temperatureSpread*0.99) + (temperatureSpreadDefault*0.01);
+
+    brightnessRangeFrom = (brightnessRangeFrom*0.99) + (brightnessRangeFromDefault*0.01);
+    brightnessRangeTo = (brightnessRangeTo*0.99) + (brightnessRangeToDefault*0.01);
+    brightnessSpeed = (brightnessSpeed*0.99) + (brightnessSpeedDefault*0.01);
+    brightnessSpread = (brightnessSpread*0.99) + (brightnessSpreadDefault*0.01);
+
     }
 
     buffer.Blackout();
@@ -575,11 +618,11 @@ void testApp::draw()
     glEnable(GL_DEPTH_TEST);
     ofEnableSmoothing();
     float viewportWidth = (ofGetWidth()-gui->getRect()->getWidth());
-    float scale = viewportWidth *1.15 / ofGetWidth();
+    float scale = viewportWidth *1.35 / ofGetWidth();
     ofViewport(gui->getRect()->getWidth(),0,viewportWidth,ofGetHeight());
     cam.begin();
     ofPushMatrix();
-    ofTranslate(viewportWidth/2, ofGetHeight()/2);
+    ofTranslate(viewportWidth/2, ofGetHeight()/2.25);
     ofScale(scale, scale, scale);
     for(std::vector<TesselationSquare*>::iterator it = tesselation.begin(); it != tesselation.end(); ++it)
     {

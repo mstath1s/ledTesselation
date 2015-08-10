@@ -309,8 +309,6 @@ public:
 
     ofVec3f addTesselation(ofVec3f _origin, int _size, int _width, int _height, ofVec3f** _tesselationMap);
 
-protected:
-
     vector<TesselationSquare*> tesselation;
     ofEasyCam cam;
     ola::DmxBuffer buffer;
@@ -318,6 +316,8 @@ protected:
 
     ofImage perlinNoiseImage;
     ofRectangle tesselationRect;
+    ofImage logoITU;
+    ofImage logoKADK;
 
     float lastFrameSeconds;
 
@@ -330,13 +330,24 @@ protected:
     float temperatureTime;
     float temperatureSpread;
 
+    float kelvinWarmRangeDefault;
+    float kelvinColdRangeDefault;
+    float temperatureSpeedDefault;
+    float temperatureSpreadDefault;
+
     float brightnessRangeFrom;
     float brightnessRangeTo;
     float brightnessSpeed;
     float brightnessTime;
     float brightnessSpread;
 
+    float brightnessRangeFromDefault;
+    float brightnessRangeToDefault;
+    float brightnessSpeedDefault;
+    float brightnessSpreadDefault;
+
     float timeOffset = 100.0;
+    float lastManipulationSeconds;
 
     ofxUISuperCanvas *gui;
     bool hideGUI;
