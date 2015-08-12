@@ -33,25 +33,28 @@ void testApp::setup()
     kelvinCold = 6500;
     kelvinWarm = 4200;
 
-    kelvinColdRangeDefault = kelvinCold * 1.0;
-    kelvinColdRange = kelvinColdRangeDefault;
     kelvinWarmRangeDefault = kelvinWarm * 1.0;
     kelvinWarmRange = kelvinWarmRangeDefault;
-    temperatureSpeedDefault = 0.5;
+    kelvinColdRangeDefault = kelvinCold * 1.0;
+    kelvinColdRange = kelvinWarmRangeDefault; // fade up from warm
+    temperatureSpeedDefault = 0.42;
     temperatureSpeed = temperatureSpeedDefault;
     temperatureSpreadDefault = 0.1;
-    temperatureSpread = temperatureSpreadDefault;
+    temperatureSpread = 0;
     temperatureTime = 0;
 
     brightnessRangeFromDefault = 0.0;
     brightnessRangeFrom = brightnessRangeFromDefault;
     brightnessRangeToDefault = 1.0;
-    brightnessRangeTo = brightnessRangeToDefault;
+    brightnessRangeTo = brightnessRangeFromDefault; // fade up from black
     brightnessSpeedDefault = 0.4;
     brightnessSpeed = brightnessSpeedDefault;
     brightnessSpreadDefault = 0.15;
-    brightnessSpread = brightnessSpreadDefault;
+    brightnessSpread = 0.25;
     brightnessTime = 0;
+
+    lastTemperatureManipulationSeconds = -manipulationTimeoutSeconds*0.75;
+    lastBrightnessManipulationSeconds = -manipulationTimeoutSeconds;
 
     setGUI();
 
