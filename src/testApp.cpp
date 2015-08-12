@@ -251,12 +251,8 @@ void testApp::setGUI()
     gui->addLabel("");
     gui->addLabel("Observational Instrument",OFX_UI_FONT_MEDIUM);
     gui->addLabel("- an installation from: LED Lighting; Interdisciplinary LED Lighting Research.\n\nThe research project has been a three-year collaboration between\nThe Royal Danish Academy of Fine Arts; Schools of Architecture,\nDesign and Conservation and The IT University of Copenhagen.\n\nAssociate Professor: Karin Soendergaard\nResearcher: Karina Munkholm Madsen\nAssociate Professor: Kjell Yngve Petersen\nResearcher: Ole Kristensen\nLighting designer: Imke Wies van Mil\nLighting designer: Jesper Kongshaug\nLighting designer: Christina Augustesen\nResearch Assistant: Thyge Waehrens", OFX_UI_FONT_SMALL);
-    gui->addLabel("");
-    gui->addLabel("");
-    gui->addLabel("");
-    ofxUIImage * i = gui->addImage("KADK_LOGO", &logoKADK, logoKADK.width, logoKADK.height, false);
-    gui->addLabel("");
-/*    gui->addLabel("");
+
+/*  gui->addLabel("");
     gui->addLabel("Presets", OFX_UI_FONT_LARGE);
     gui->addSpacer();
     gui->addLabel("Keep settings as xml files", OFX_UI_FONT_SMALL);
@@ -267,9 +263,13 @@ void testApp::setGUI()
     gui->addSpacer();
     gui->addFPS();
 */
-    gui->addImage("ITU_LOGO", &logoITU, logoITU.width, logoITU.height, false);
+    ofxUIImage * i = gui->addImage("ITU_LOGO", &logoITU, logoITU.width, logoITU.height, false);
+    i->initRect(14,(1080-20)-logoITU.height,logoITU.width, logoITU.height);
+    i = gui->addImage("KADK_LOGO", &logoKADK, logoKADK.width, logoKADK.height, false);
+    i->initRect(330,(1080-20)-logoKADK.height, logoKADK.width, logoKADK.height);
     gui->getRect()->setHeight(ofGetHeight());
     gui->autoSizeToFitWidgets();
+    gui->setAutoDraw(false);
 
     ofAddListener(gui->newGUIEvent,this,&testApp::guiEvent);
 }
@@ -279,7 +279,13 @@ void testApp::guiEvent(ofxUIEventArgs &e)
     string name = e.getName();
     int kind = e.getKind();
 
-    lastManipulationSeconds = ofGetElapsedTimef();
+    if(name[0] == 't'){
+        lastTemperatureManipulationSeconds = ofGetElapsedTimef();
+    }
+
+    if(name[0] == 'b'){
+        lastBrightnessManipulationSeconds = ofGetElapsedTimef();
+    }
 
     //cout << "got event from: " << name << endl;
     if(name == "Save")
@@ -359,12 +365,16 @@ void testApp::update()
     }
 
 
-    if(lastManipulationSeconds + 30.0 < ofGetElapsedTimef()){
+    if(lastTemperatureManipulationSeconds + manipulationTimeoutSeconds < ofGetElapsedTimef()){
 
     kelvinColdRange = (kelvinColdRange*0.99) + (kelvinColdRangeDefault*0.01);
     kelvinWarmRange = (kelvinWarmRange*0.99) + (kelvinWarmRangeDefault*0.01);
     temperatureSpeed = (temperatureSpeed*0.99) + (temperatureSpeedDefault*0.01);
     temperatureSpread = (temperatureSpread*0.99) + (temperatureSpreadDefault*0.01);
+
+    }
+
+    if(lastBrightnessManipulationSeconds + manipulationTimeoutSeconds < ofGetElapsedTimef()){
 
     brightnessRangeFrom = (brightnessRangeFrom*0.99) + (brightnessRangeFromDefault*0.01);
     brightnessRangeTo = (brightnessRangeTo*0.99) + (brightnessRangeToDefault*0.01);
@@ -636,6 +646,20 @@ void testApp::draw()
     ofPopMatrix();
     cam.end();
     ofViewport();
+
+    ofPath tArcPath;
+    tArcPath.setArcResolution(360);
+    tArcPath.arc(421,30,10,10,
+                 0, 359.9*(fmaxf(-1.0,(lastTemperatureManipulationSeconds-ofGetElapsedTimef())/manipulationTimeoutSeconds))
+                 );
+    tArcPath.draw();
+
+    ofPath bArcPath;
+    bArcPath.setArcResolution(360);
+    bArcPath.arc(421,413,10,10,
+                 0, 359.9*(fmaxf(-1.0,(lastBrightnessManipulationSeconds-ofGetElapsedTimef())/manipulationTimeoutSeconds))
+                 );
+    bArcPath.draw();
 }
 
 //--------------------------------------------------------------

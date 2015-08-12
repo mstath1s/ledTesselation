@@ -347,7 +347,9 @@ public:
     float brightnessSpreadDefault;
 
     float timeOffset = 100.0;
-    float lastManipulationSeconds;
+    float lastTemperatureManipulationSeconds = 0;
+    float lastBrightnessManipulationSeconds = 0;
+    float manipulationTimeoutSeconds = 30.0;
 
     ofxUISuperCanvas *gui;
     bool hideGUI;
