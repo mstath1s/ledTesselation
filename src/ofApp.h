@@ -1,10 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include <ola/DmxBuffer.h>
-#include <ola/Logging.h>
-#include <ola/StreamingClient.h>
-#include "fullScreenDialogs.h"
+#include "ofxDmx.h"
 #include "ofxUI.h"
 
 enum DMXchannelType
@@ -285,7 +282,7 @@ public:
 };
 
 
-class testApp : public ofBaseApp
+class ofApp : public ofBaseApp
 {
 
 public:
@@ -311,8 +308,8 @@ public:
 
     vector<TesselationSquare*> tesselation;
     ofEasyCam cam;
-    ola::DmxBuffer buffer;
-    ola::StreamingClient ola_client;
+    
+    ofxDmx dmx;
 
     ofImage perlinNoiseImage;
     ofRectangle tesselationRect;
@@ -352,11 +349,14 @@ public:
     float manipulationTimeoutSeconds = 30.0;
 
     ofxUISuperCanvas *gui;
+    ofxUILabel *brightnessLabel;
+    ofxUILabel *temperatureLabel;
     bool hideGUI;
     bool bSaveSettings;
     bool bLoadSettings;
     bool bSavePDF;
     void guiEvent(ofxUIEventArgs &e);
+    ofTrueTypeFont guiFont;
 
     ofTrueTypeFont printFontHeader;
     ofTrueTypeFont printFontText;

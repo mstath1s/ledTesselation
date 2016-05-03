@@ -1,8 +1,7 @@
-ofxArtnet
+ofxDmx
+ofxOlaShaderLight
 ofxOsc
-ofxXmlSettings
-ofx3DModelLoader
 ofxThreadedImageLoader
 ofxUI
-ofxOlaShaderLight
 ofxUbo
+ofxXmlSettings

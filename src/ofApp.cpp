@@ -1,5 +1,5 @@
-#include "testApp.h"
-
+#include "ofApp.h"
+/*
 std::string exec(char* cmd)
 {
     FILE* pipe = popen(cmd, "r");
@@ -14,18 +14,19 @@ std::string exec(char* cmd)
     pclose(pipe);
     return result;
 }
-
+*/
 //--------------------------------------------------------------
-void testApp::setup()
+void ofApp::setup()
 {
 
-    printFontHeader.loadFont("GUI/DroidSans.ttf", 12, true, true, true, 0);
-    printFontText.loadFont("GUI/DroidSans.ttf", 8, true, true, true, 0);
-
-    logoITU.loadImage("GUI/logoITU.jpg");
-    logoITU.resize(220, 220*logoITU.height/logoITU.width);
-    logoKADK.loadImage("GUI/logoKADK.png");
-    logoKADK.resize(100, 100*logoKADK.height/logoKADK.width);
+    printFontHeader.load("GUI/DroidSans.ttf", 12, true, true, true, 0);
+    printFontText.load("GUI/DroidSans.ttf", 8, true, true, true, 0);
+    //guiFont.load("GUI/DroidSans.ttf", 10, true, true, true, 0);
+    
+    logoITU.load("GUI/logoITU.jpg");
+    logoITU.resize(220, 220*logoITU.getHeight()/logoITU.getWidth());
+    logoKADK.load("GUI/logoKADK.png");
+    logoKADK.resize(100, 100*logoKADK.getHeight()/logoKADK.getWidth());
 
     loadedFileName = "unsaved preset";
 
@@ -55,20 +56,22 @@ void testApp::setup()
 
     lastTemperatureManipulationSeconds = -manipulationTimeoutSeconds*0.75;
     lastBrightnessManipulationSeconds = -manipulationTimeoutSeconds;
-
-    setGUI();
-
-    ola::InitLogging(ola::OLA_LOG_WARN, ola::OLA_LOG_STDERR);
-
-    // Setup the client, this connects to the server
-    if (!ola_client.Setup())
-    {
-        std::cerr << "OLA Setup failed" << std::endl;
+    
+    ofSerial serial;
+    
+    auto devices = serial.getDeviceList();
+    
+    string searchString = "tty.usbserial-EN";
+    
+    for(auto d : devices){
+        if(d.getDeviceName().find(searchString) != string::npos){
+            dmx.connect(d.getDeviceName(), 512);
+            break;
+        }
     }
-
-//    sourceCamera.connect();
-//	  cameraController.load("cameraSettings.xml");
-
+    
+    // sourceCamera.connect();
+    // cameraController.load("cameraSettings.xml");
 
     cam.setTranslationKey(' ');
     cam.enableOrtho();
@@ -87,7 +90,7 @@ void testApp::setup()
             |\  0  /|
             | \   / |
             |  \ /  |
-            Â­\ 1 | 2 /
+            \ 1 | 2 /
              \  |  /
 
     **/
@@ -151,12 +154,15 @@ void testApp::setup()
         tesselationRect.growToInclude(t->getPosition());
     }
 
-    perlinNoiseImage.allocate(int(tesselationRect.getWidth()*0.25), int(tesselationRect.getHeight()*0.25),  OF_IMAGE_COLOR);
+    perlinNoiseImage.allocate(floor(tesselationRect.getWidth()*0.25), floor(tesselationRect.getHeight()*0.25),  OF_IMAGE_COLOR);
 
     ofSetFrameRate(30);
+    
+    setGUI();
+
 }
 
-ofVec3f testApp::addTesselation(ofVec3f _origin, int _size, int _width, int _height, ofVec3f** _tesselationMap)
+ofVec3f ofApp::addTesselation(ofVec3f _origin, int _size, int _width, int _height, ofVec3f** _tesselationMap)
 {
 
     ofVec3f offset, firstOffset;
@@ -214,7 +220,7 @@ ofVec3f testApp::addTesselation(ofVec3f _origin, int _size, int _width, int _hei
     return firstOffset;
 }
 
-void testApp::setGUI()
+void ofApp::setGUI()
 {
 
     gui = new ofxUISuperCanvas("");
@@ -223,12 +229,12 @@ void testApp::setGUI()
     gui->setPadding(8);
     gui->setGlobalSliderHeight(45);
     gui->setPosition(10,0);
-    gui->setFont("GUI/DroidSans.ttf");
     gui->setFontSize(OFX_UI_FONT_LARGE, 10);
     gui->setFontSize(OFX_UI_FONT_MEDIUM, 8);
     gui->setFontSize(OFX_UI_FONT_SMALL, 6);
+    gui->setFont("GUI/DroidSans.ttf");
     //gui->addLabel("");
-    gui->addLabel("TEMPERATURE", OFX_UI_FONT_LARGE);
+    temperatureLabel = gui->addLabel("TEMPERATURE", OFX_UI_FONT_LARGE);
     gui->addSpacer();
     gui->addLabel("Range", OFX_UI_FONT_SMALL);
     gui->addRangeSlider("tRange", kelvinWarm, kelvinCold, &kelvinWarmRange, &kelvinColdRange)->setColorBack(ofColor(48,48,48));
@@ -240,7 +246,7 @@ void testApp::setGUI()
     gui->addSlider("tSpread",0,0.33,&temperatureSpread)->setColorBack(ofColor(48,48,48));
     gui->addSpacer();
     gui->addLabel("");
-    gui->addLabel("BRIGHTNESS", OFX_UI_FONT_LARGE);
+    brightnessLabel = gui->addLabel("BRIGHTNESS", OFX_UI_FONT_LARGE);
     gui->addSpacer();
     gui->addLabel("Range", OFX_UI_FONT_SMALL);
     gui->addRangeSlider("bRange", 0, 1, &brightnessRangeFrom, &brightnessRangeTo)->setColorBack(ofColor(48,48,48));
@@ -266,18 +272,20 @@ void testApp::setGUI()
     gui->addSpacer();
     gui->addFPS();
 */
-    ofxUIImage * i = gui->addImage("ITU_LOGO", &logoITU, logoITU.width, logoITU.height, false);
-    i->initRect(14,(1080-20)-logoITU.height,logoITU.width, logoITU.height);
-    i = gui->addImage("KADK_LOGO", &logoKADK, logoKADK.width, logoKADK.height, false);
-    i->initRect(330,(1080-20)-logoKADK.height, logoKADK.width, logoKADK.height);
-    gui->getRect()->setHeight(ofGetHeight());
+    ofxUIImage * i = gui->addImage("ITU_LOGO", &logoITU, logoITU.getWidth(), logoITU.getHeight(), false);
+    i->initRect(14,(1080-20)-logoITU.getHeight(),logoITU.getWidth(), logoITU.getHeight());
+    i = gui->addImage("KADK_LOGO", &logoKADK, logoKADK.getWidth(), logoKADK.getHeight(), false);
+    i->initRect(330,(1080-20)-logoKADK.getHeight(), logoKADK.getWidth(), logoKADK.getHeight());
+    //gui->getRect()->setHeight(ofGetHeight());
     gui->autoSizeToFitWidgets();
-    gui->setAutoDraw(false);
+    gui->setHeight(ofGetHeight());
+    gui->disableAppDrawCallback();
+//    gui->setAutoDraw(false);
 
-    ofAddListener(gui->newGUIEvent,this,&testApp::guiEvent);
+    ofAddListener(gui->newGUIEvent,this,&ofApp::guiEvent);
 }
 
-void testApp::guiEvent(ofxUIEventArgs &e)
+void ofApp::guiEvent(ofxUIEventArgs &e)
 {
     string name = e.getName();
     int kind = e.getKind();
@@ -296,7 +304,7 @@ void testApp::guiEvent(ofxUIEventArgs &e)
         ofxUIButton *button = (ofxUIButton *) e.getButton();
         if(button->getValue())
         {
-            ofFileDialogResult dr = fullScreenSaveDialog( ofToDataPath("settings")+"/settings.xml", "Save settings");
+            ofFileDialogResult dr = ofSystemSaveDialog( ofToDataPath("settings")+"/settings.xml", "Save settings");
             if(dr.bSuccess)
             {
                 ofFile file(dr.filePath);
@@ -314,7 +322,7 @@ void testApp::guiEvent(ofxUIEventArgs &e)
         if(button->getValue())
         {
 
-            ofFileDialogResult dr = fullScreenLoadDialog("Load settings", false, ofToDataPath("settings")+"/*.xml");
+            ofFileDialogResult dr = ofSystemLoadDialog("Load settings", false, ofToDataPath("settings")+"/*.xml");
 
             if(dr.bSuccess)
             {
@@ -341,9 +349,9 @@ void testApp::guiEvent(ofxUIEventArgs &e)
             dir.allowExt("xml");
             //populate the directory object
             dir.listDir();
-
+            
             //go through and print out all the paths
-            for(int i = 0; i < dir.numFiles(); i++)
+            for(int i = 0; i < dir.size(); i++)
             {
                 ofLogNotice(dir.getPath(i));
                 ofFile file(dir.getPath(i));
@@ -359,7 +367,7 @@ void testApp::guiEvent(ofxUIEventArgs &e)
 
 
 //--------------------------------------------------------------
-void testApp::update()
+void ofApp::update()
 {
 
     if(ofGetFrameNum() > 1)
@@ -386,8 +394,8 @@ void testApp::update()
 
     }
 
-    buffer.Blackout();
-
+//    dmx.clear();
+    
     double temperatureSpreadCubic = powf(temperatureSpread, 3);
     double brightnessSpreadCubic = powf(brightnessSpread, 3);
 
@@ -451,8 +459,8 @@ void testApp::update()
                 if(c->width16bit)
                 {
                     unsigned int valueInt = ofMap(value, 0.,1., 0, pow(255,2));
-                    buffer.SetChannel(c->address-1, valueInt/255);
-                    buffer.SetChannel(c->address, valueInt%255);
+                    dmx.setLevel(c->address, valueInt/255);
+                    dmx.setLevel(c->address+1, valueInt%255);
                 }
                 else
                 {
@@ -463,11 +471,8 @@ void testApp::update()
         t->update();
     }
 
-    if (!ola_client.SendDmx(0, buffer))
-    {
-        cout << "Send DMX failed" << endl;
-    }
-
+    dmx.update();
+    
     //  cameraController.update();
 
     float now = ofGetElapsedTimef() + timeOffset;
@@ -477,7 +482,7 @@ void testApp::update()
 }
 
 //--------------------------------------------------------------
-void testApp::draw()
+void ofApp::draw()
 {
     if( bSavePDF )
     {
@@ -533,7 +538,7 @@ void testApp::draw()
 
                 ofTranslate(0, 24);
 
-                /* void testApp::drawSliderForPdf(string name,
+                /* void ofApp::drawSliderForPdf(string name,
                                                   float x, float y, float width, float height,
                                                   float valueMin, float valueMax,
                                                   float value,
@@ -572,7 +577,7 @@ void testApp::draw()
 
                 ofTranslate(0, 24);
 
-                /* void testApp::drawSliderForPdf(string name,
+                /* void ofApp::drawSliderForPdf(string name,
                                                   float x, float y, float width, float height,
                                                   float valueMin, float valueMax,
                                                   float value,
@@ -629,50 +634,57 @@ void testApp::draw()
 
     ofBackgroundGradient(ofColor(40), ofColor(10), OF_GRADIENT_CIRCULAR);
     glEnable(GL_DEPTH_TEST);
-    ofEnableSmoothing();
+    //ofEnableSmoothing();
     float viewportWidth = (ofGetWidth()-gui->getRect()->getWidth());
-    float scale = viewportWidth *1.35 / ofGetWidth();
+    float scale = viewportWidth * 1.35 / ofGetWidth();
+    ofPushView();
     ofViewport(gui->getRect()->getWidth(),0,viewportWidth,ofGetHeight());
     cam.begin();
     ofPushMatrix();
-    ofTranslate(viewportWidth/2, ofGetHeight()/2.25);
+    ofTranslate(viewportWidth/2, ofGetHeight()/3.0);
     ofScale(scale, scale, scale);
     for(std::vector<TesselationSquare*>::iterator it = tesselation.begin(); it != tesselation.end(); ++it)
     {
         TesselationSquare* t = *(it);
         t->draw();
     }
-    ofTranslate(0, ofGetHeight()/3);
-    ofSetColor(255);
+    
+    
+    ofTranslate(0, -ofGetHeight()/3.0);
+
+    ofSetColor(255,255);
     glDisable(GL_DEPTH_TEST);
     perlinNoiseImage.draw(tesselationRect.getMinX(),tesselationRect.getMinY(),tesselationRect.getWidth(), tesselationRect.getHeight());
     ofPopMatrix();
     cam.end();
-    ofViewport();
-
+    ofPopView();
+    
     ofPath tArcPath;
     tArcPath.setArcResolution(360);
-    tArcPath.arc(421,30,10,10,
+    
+    tArcPath.arc(gui->getPaddingRect()->getMaxX()-20,temperatureLabel->getRect()->getMaxY()-temperatureLabel->getRect()->getHalfHeight(),10,10,
                  0, 359.9*(fmaxf(-1.0,(lastTemperatureManipulationSeconds-ofGetElapsedTimef())/manipulationTimeoutSeconds))
                  );
     tArcPath.draw();
 
     ofPath bArcPath;
     bArcPath.setArcResolution(360);
-    bArcPath.arc(421,413,10,10,
+    bArcPath.arc(gui->getPaddingRect()->getMaxX()-20,brightnessLabel->getRect()->getMaxY()-brightnessLabel->getRect()->getHalfHeight(),10,10,
                  0, 359.9*(fmaxf(-1.0,(lastBrightnessManipulationSeconds-ofGetElapsedTimef())/manipulationTimeoutSeconds))
                  );
     bArcPath.draw();
+    
+    gui->draw();
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key)
+void ofApp::keyPressed(int key)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::keyReleased(int key)
+void ofApp::keyReleased(int key)
 {
     if(key == 'f')
     {
@@ -681,67 +693,67 @@ void testApp::keyReleased(int key)
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y )
+void ofApp::mouseMoved(int x, int y )
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button)
+void ofApp::mouseDragged(int x, int y, int button)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button)
+void ofApp::mousePressed(int x, int y, int button)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button)
+void ofApp::mouseReleased(int x, int y, int button)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::windowResized(int w, int h)
+void ofApp::windowResized(int w, int h)
 {
     gui->getRect()->setHeight(ofGetHeight());
 }
 
 //--------------------------------------------------------------
-void testApp::gotMessage(ofMessage msg)
+void ofApp::gotMessage(ofMessage msg)
 {
 
 }
 
 //--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo)
+void ofApp::dragEvent(ofDragInfo dragInfo)
 {
 
 }
 
-void testApp::drawSliderForPdf(string name, float x, float y, float width, float height,
+void ofApp::drawSliderForPdf(string name, float x, float y, float width, float height,
                                float valueMin, float valueMax, float value, float valueLow, float valueHigh)
 {
     ofFill();
 
     ofPushStyle();
     ofSetColor((ofGetStyle().color * 0.5)+127);
-    ofRect(x,y,width,height);
+    ofDrawRectangle(x,y,width,height);
     ofPopStyle();
 
     string valueString = "";
 
     if(valueHigh == -1 && valueLow == -1)
     {
-        ofRect(x, y, ofMap(value, valueMin, valueMax, 0, width), height);
+        ofDrawRectangle(x, y, ofMap(value, valueMin, valueMax, 0, width), height);
         valueString = ofToString(value);
     }
     else
     {
-        ofRect(x + ofMap(valueLow, valueMin, valueMax, 0, width), y, ofMap(valueHigh, valueMin, valueMax, 0, width-ofMap(valueLow, valueMin, valueMax, 0, width)), height);
+        ofDrawRectangle(x + ofMap(valueLow, valueMin, valueMax, 0, width), y, ofMap(valueHigh, valueMin, valueMax, 0, width-ofMap(valueLow, valueMin, valueMax, 0, width)), height);
         int rounding = ((valueMax - valueMin) / 1000.0 > 1.0 )? 0 : 3;
         valueString = ofToString(valueLow, rounding) + " ... " + ofToString(valueHigh, rounding);
     }
