@@ -6,16 +6,12 @@
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
     "7E804D925461714118DB355C65BC964B41D94376" : 0,
     "1C584D82D8F91B619E103DBEA051F0CCC0070ED3" : 0,
-    "5ED34DB3F2B79485CDDEB7F4106B4602D562F986" : 0,
-    "926E79937B1D74080D6099615F18FF8D46E99FB5" : 0,
     "B0CCE45521269233B63FEF8C9AF4030CD2F9B60D" : 0
   },
-  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "B0082DF3-0AA8-4E5B-A999-2826121266B1",
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "98017231-E1B5-45DE-91EE-CAD4EC1E01AE",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "7E804D925461714118DB355C65BC964B41D94376" : "..\/..\/addons\/ofxUI",
     "1C584D82D8F91B619E103DBEA051F0CCC0070ED3" : "..\/..\/addons\/ofxDmx",
-    "5ED34DB3F2B79485CDDEB7F4106B4602D562F986" : "..\/..\/addons\/ofxOlaShaderLight",
-    "926E79937B1D74080D6099615F18FF8D46E99FB5" : "..\/..\/addons\/ofxUbo",
     "B0CCE45521269233B63FEF8C9AF4030CD2F9B60D" : "ledTesselation\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "ledTesselation",
@@ -28,19 +24,9 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1C584D82D8F91B619E103DBEA051F0CCC0070ED3"
     },
     {
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/olekristensen\/ofxOlaShaderLight.git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5ED34DB3F2B79485CDDEB7F4106B4602D562F986"
-    },
-    {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/olekristensen\/ofxUI.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "7E804D925461714118DB355C65BC964B41D94376"
-    },
-    {
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/olekristensen\/ofxUbo.git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "926E79937B1D74080D6099615F18FF8D46E99FB5"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/olekristensen\/ledTesselation.git",

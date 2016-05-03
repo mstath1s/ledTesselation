@@ -6,7 +6,7 @@ int main( ){
     
     ofGLFWWindowSettings windowSettings;
     
-    windowSettings.setGLVersion(4, 0);
+    windowSettings.setGLVersion(4, 1);
     windowSettings.numSamples = 4;
 
 

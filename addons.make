@@ -1,7 +1,3 @@
 ofxDmx
-ofxOlaShaderLight
-ofxOsc
-ofxThreadedImageLoader
 ofxUI
-ofxUbo
 ofxXmlSettings
