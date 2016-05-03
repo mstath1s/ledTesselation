@@ -21,7 +21,6 @@ void ofApp::setup()
 
     printFontHeader.load("GUI/DroidSans.ttf", 12, true, true, true, 0);
     printFontText.load("GUI/DroidSans.ttf", 8, true, true, true, 0);
-    //guiFont.load("GUI/DroidSans.ttf", 10, true, true, true, 0);
     
     logoITU.load("GUI/logoITU.jpg");
     logoITU.resize(220, 220*logoITU.getHeight()/logoITU.getWidth());
