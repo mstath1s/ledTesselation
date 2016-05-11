@@ -16,33 +16,40 @@ int main( ){
     CGDisplayCount displayCount;
     CGDirectDisplayID displays[32];
     
+    CGDirectDisplayID mainDisplay;
+    CGDirectDisplayID secondaryDisplay;
+    
     // Grab the active displays
     CGGetActiveDisplayList(32, displays, &displayCount);
+    
     int numDisplays= displayCount;
     
     // print display info.
     cout<<numDisplays<<" display(s) detected."<<endl;
-    
+
     for (int i = 0; i < displayCount; i++){
-        cout << displays[i] << "\t(" << CGDisplayPixelsWide(displays[i]) << "x" << CGDisplayPixelsHigh(displays[i]) << ")"<< endl;
+        if(CGDisplayIsMain(displays[i])){
+            mainDisplay = displays[i];
+        } else {
+            secondaryDisplay = displays[i];
+        }
     }
     
-    CGRect mainDisplayBounds= CGDisplayBounds ( displays[0] );
-    
     if(numDisplays == 1 ){
+
+        CGRect mainDisplayBounds= CGDisplayBounds ( mainDisplay );
         
         windowSettings.width = mainDisplayBounds.size.width;
         windowSettings.height = mainDisplayBounds.size.height;
-        windowSettings.decorated = true;
-        windowSettings.resizable = true;
+        windowSettings.setPosition(ofVec2f(mainDisplayBounds.origin.x, mainDisplayBounds.origin.y));
+        windowSettings.decorated = false;
+        windowSettings.resizable = false;
         
         cout << "configured default one display setup" << endl;
         
     } else if (numDisplays > 1){
-        
-        // two displays: palce resizeable gui on first and fill second with undecorated mainWindow - will also work with dual head configuraions for projectors
-        
-        CGRect secondDisplayBounds= CGDisplayBounds ( displays[1] );
+
+        CGRect secondDisplayBounds= CGDisplayBounds ( secondaryDisplay );
         
         windowSettings.width = secondDisplayBounds.size.width;
         windowSettings.height = secondDisplayBounds.size.height;
@@ -57,11 +64,6 @@ int main( ){
 
     shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(windowSettings);
     
-    ofPoint screenSize = mainWindow->getScreenSize();
-    
-    mainWindow->setWindowPosition(screenSize.x, 0);
-    mainWindow->setFullscreen(true);
-
     ofRunApp(mainWindow, mainApp);
     
     ofRunMainLoop();

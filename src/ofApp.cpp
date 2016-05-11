@@ -18,6 +18,8 @@ std::string exec(char* cmd)
 //--------------------------------------------------------------
 void ofApp::setup()
 {
+    ofSetDataPathRoot("../Resources/");
+    ofSetFullscreen(true);
 
     printFontHeader.load("GUI/DroidSans.ttf", 12, true, true, true, 0);
     printFontText.load("GUI/DroidSans.ttf", 8, true, true, true, 0);
