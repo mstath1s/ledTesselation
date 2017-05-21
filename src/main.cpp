@@ -4,6 +4,9 @@
 //========================================================================
 int main( ){
     
+    cout << "sleeping a couple of seconds to allow mac screen mirroring to stabilise" << endl;
+    sleep(2);
+    
     ofGLFWWindowSettings windowSettings;
     
     windowSettings.setGLVersion(4, 1);
@@ -34,14 +37,14 @@ int main( ){
             secondaryDisplay = displays[i];
         }
     }
-    
+    /*
     if(numDisplays == 1 ){
 
         CGRect mainDisplayBounds= CGDisplayBounds ( mainDisplay );
         
+        windowSettings.setPosition(ofVec2f(mainDisplayBounds.origin.x, mainDisplayBounds.origin.y));
         windowSettings.width = mainDisplayBounds.size.width;
         windowSettings.height = mainDisplayBounds.size.height;
-        windowSettings.setPosition(ofVec2f(mainDisplayBounds.origin.x, mainDisplayBounds.origin.y));
         windowSettings.decorated = false;
         windowSettings.resizable = false;
         
@@ -51,14 +54,22 @@ int main( ){
 
         CGRect secondDisplayBounds= CGDisplayBounds ( secondaryDisplay );
         
+        windowSettings.setPosition(ofVec2f(secondDisplayBounds.origin.x,secondDisplayBounds.origin.y));
         windowSettings.width = secondDisplayBounds.size.width;
         windowSettings.height = secondDisplayBounds.size.height;
-        windowSettings.setPosition(ofVec2f(secondDisplayBounds.origin.x,secondDisplayBounds.origin.y));
         windowSettings.decorated = false;
         windowSettings.resizable = false;
 
         cout << "configured default two display setup" << endl;
     }
+*/
+    CGRect mainDisplayBounds= CGDisplayBounds ( mainDisplay );
+    
+    windowSettings.setPosition(ofVec2f(0, 0));
+    windowSettings.width = mainDisplayBounds.size.width;
+    windowSettings.height = mainDisplayBounds.size.height;
+    windowSettings.decorated = false;
+    windowSettings.resizable = false;
 
     shared_ptr<ofApp> mainApp(new ofApp);
 

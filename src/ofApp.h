@@ -346,7 +346,7 @@ public:
     float timeOffset = 100.0;
     float lastTemperatureManipulationSeconds = 0;
     float lastBrightnessManipulationSeconds = 0;
-    float manipulationTimeoutSeconds = 30.0;
+    float manipulationTimeoutSeconds = 60.0;
 
     ofxUISuperCanvas *gui;
     ofxUILabel *brightnessLabel;

@@ -1,26 +1,17 @@
 #include "ofApp.h"
-/*
-std::string exec(char* cmd)
-{
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe) return "ERROR";
-    char buffer[128];
-    std::string result = "";
-    while(!feof(pipe))
-    {
-        if(fgets(buffer, 128, pipe) != NULL)
-            result += buffer;
-    }
-    pclose(pipe);
-    return result;
-}
-*/
+#include <Cocoa/Cocoa.h>
+
+
 //--------------------------------------------------------------
 void ofApp::setup()
 {
     ofSetDataPathRoot("../Resources/");
-    ofSetFullscreen(true);
-
+    //ofSetFullscreen(true);
+    
+    CGCaptureAllDisplays();
+    NSWindow * window = (NSWindow *)ofGetWindowPtr()->getCocoaWindow();
+    [window setLevel:CGShieldingWindowLevel()];
+   
     printFontHeader.load("GUI/DroidSans.ttf", 12, true, true, true, 0);
     printFontText.load("GUI/DroidSans.ttf", 8, true, true, true, 0);
     
@@ -225,6 +216,7 @@ void ofApp::setGUI()
 {
 
     gui = new ofxUISuperCanvas("");
+    gui->disableAppDrawCallback();
 //    gui->addLabel("Press 'h' to Hide GUIs", OFX_UI_FONT_SMALL);
     gui->setWidth(ofGetWidth()/3.);
     gui->setPadding(8);
@@ -233,7 +225,8 @@ void ofApp::setGUI()
     gui->setFontSize(OFX_UI_FONT_LARGE, 10);
     gui->setFontSize(OFX_UI_FONT_MEDIUM, 8);
     gui->setFontSize(OFX_UI_FONT_SMALL, 6);
-    gui->setFont("GUI/DroidSans.ttf");
+    while(!gui->setFont("GUI/DroidSans.ttf")) {;}
+//    gui->setFont("GUI/DroidSans.ttf");
     //gui->addLabel("");
     temperatureLabel = gui->addLabel("TEMPERATURE", OFX_UI_FONT_LARGE);
     gui->addSpacer();
@@ -260,7 +253,7 @@ void ofApp::setGUI()
     gui->addSpacer();
     gui->addLabel("");
     gui->addLabel("Observational Instrument",OFX_UI_FONT_MEDIUM);
-    gui->addLabel("- an installation from: LED Lighting; Interdisciplinary LED Lighting Research.\n\nThe research project has been a three-year collaboration between\nThe Royal Danish Academy of Fine Arts; Schools of Architecture,\nDesign and Conservation and The IT University of Copenhagen.\n\nAssociate Professor: Karin Soendergaard\nResearcher: Karina Munkholm Madsen\nAssociate Professor: Kjell Yngve Petersen\nResearcher: Ole Kristensen\nLighting designer: Imke Wies van Mil\nLighting designer: Jesper Kongshaug\nLighting designer: Christina Augustesen\nResearch Assistant: Thyge Waehrens", OFX_UI_FONT_SMALL);
+    gui->addLabel("- an installation from: LED Lighting; Interdisciplinary LED Lighting Research.\n\nThe research project has been a three-year collaboration between\nThe Royal Danish Academy of Fine Arts; Schools of Architecture,\nDesign and Conservation and The IT University of Copenhagen.\n\nArchitect: Karina Munkholm Madsen\nSoftware Artist: Ole Kristensen\nAssociate Professor: Karin Soendergaard\nAssociate Professor: Kjell Yngve Petersen\nLighting designer: Imke Wies van Mil\nLighting designer: Jesper Kongshaug\nLighting designer: Christina Augustesen\nResearch Assistant: Thyge Waehrens", OFX_UI_FONT_SMALL);
 
 /*  gui->addLabel("");
     gui->addLabel("Presets", OFX_UI_FONT_LARGE);
@@ -280,7 +273,6 @@ void ofApp::setGUI()
     //gui->getRect()->setHeight(ofGetHeight());
     gui->autoSizeToFitWidgets();
     gui->setHeight(ofGetHeight());
-    gui->disableAppDrawCallback();
 //    gui->setAutoDraw(false);
 
     ofAddListener(gui->newGUIEvent,this,&ofApp::guiEvent);
@@ -485,6 +477,7 @@ void ofApp::update()
 //--------------------------------------------------------------
 void ofApp::draw()
 {
+
     if( bSavePDF )
     {
         ofBeginSaveScreenAsPDF(loadedFileName+" - "+ofGetTimestampString()+".pdf", false);
@@ -675,7 +668,40 @@ void ofApp::draw()
                  );
     bArcPath.draw();
     
-    gui->draw();
+    if(ofGetElapsedTimef() > 1)
+        gui->draw();
+    
+    if(ofGetElapsedTimef() - lastBrightnessManipulationSeconds > manipulationTimeoutSeconds && ofGetElapsedTimef() - lastTemperatureManipulationSeconds > manipulationTimeoutSeconds  ){
+        
+        auto widgets = gui->getWidgets();
+        
+        string message("you can drag this slider");
+
+        ofRectangle fontRect(printFontHeader.getStringBoundingBox(message,0,0));
+
+        for(vector<ofxUIWidget *>::iterator it = widgets.begin(); it != widgets.end(); ++it) {
+            if((*it)->getKind() == OFX_UI_WIDGET_SLIDER_H || (*it)->getKind() == OFX_UI_WIDGET_RSLIDER_H) {
+
+                
+                auto sliderRect = (*it)->getRect();
+                
+                ofSetColor(180, 180, 180, 255);
+                
+                ofDrawTriangle((sliderRect->getMaxX()-fontRect.getWidth())-18 , sliderRect->getMinY(), (sliderRect->getMaxX()-fontRect.getWidth())-18, sliderRect->getMaxY(), (sliderRect->getMaxX()-fontRect.getWidth())-36, sliderRect->getMinY()+sliderRect->getHalfHeight());
+                ofDrawRectangle((sliderRect->getMaxX()-fontRect.getWidth())-18, sliderRect->getMinY(), fontRect.getWidth()+30, sliderRect->getHeight());
+
+                ofSetColor(33, 33, 33, 255);
+                ofDrawTriangle((sliderRect->getMaxX()-fontRect.getWidth())-17 , sliderRect->getMinY()+1, (sliderRect->getMaxX()-fontRect.getWidth())-17, sliderRect->getMaxY()-1, (sliderRect->getMaxX()-fontRect.getWidth())-34, sliderRect->getMinY()+sliderRect->getHalfHeight());
+                ofDrawRectangle((sliderRect->getMaxX()-fontRect.getWidth())-17, sliderRect->getMinY()+1, fontRect.getWidth()+28, sliderRect->getHeight()-2);
+
+                ofSetColor(190, 190, 190, 255);
+
+                printFontHeader.drawString(message,(sliderRect->getMaxX()-fontRect.getWidth())-9, (sliderRect->getY()+sliderRect->getHalfHeight())+(fontRect.getHeight()/2.0)-1);
+
+            }
+        }
+    }
+
 }
 
 //--------------------------------------------------------------
